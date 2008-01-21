@@ -1,0 +1,22 @@
+<component>
+  <description>
+     Definitions for before storages.
+  </description>
+
+  <sectiontype name="before" datatype="zc.beforestorage.ZConfig"
+               implements="ZODB.storage">
+
+    <section type="ZODB.storage" name="*" attribute="base" required="yes" />
+
+    <key name="before" datatype="string" required="no">
+      <description>
+        The time before which data will be read from the base storage.
+        This is of the form: YYYY-MM-DDTHH:MM:SS.SSS, where trailing
+        time data is optional. That is: YYYY-MM-DDTHH:MM:SS,
+        YYYY-MM-DDTHH:MM, YYYY-MM-DDTHH, and YYYY-MM-DD, are all valid
+        forms. 
+      </description>
+    </key>
+  </sectiontype>
+
+</component>

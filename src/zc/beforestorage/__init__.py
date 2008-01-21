@@ -51,6 +51,9 @@ class Before:
                                  ZODB.TimeStamp.TimeStamp(self.before),
                                  )
 
+    def __repr__(self):
+        return "<%s: %s>" % (self.__class__.__name__, self.getName())
+
     def getSize(self):
         return self.storage.getSize()
 
@@ -131,3 +134,14 @@ class Before:
 
     def tpc_vote(self, transaction):
         raise ZODB.POSException.StorageTransactionError(self, transaction)
+
+class ZConfig:
+
+    def __init__(self, config):
+        self.config = config
+        self.name = config.getSectionName()
+
+    def open(self):
+        base = self.config.base.open()
+        return Before(base, self.config.before)
+    

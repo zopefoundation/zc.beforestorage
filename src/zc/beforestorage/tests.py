@@ -35,7 +35,7 @@ def setUp(test):
 def test_suite():
     return unittest.TestSuite((
         doctest.DocFileSuite(
-            'README.txt',
+            'README.txt', 'zconfig.txt',
             setUp=setUp, tearDown=zope.testing.setupstack.tearDown,
             ),
         ))
