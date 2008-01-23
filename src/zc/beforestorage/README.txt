@@ -1,3 +1,4 @@
+==============
 Before Storage
 ==============
 
@@ -36,8 +37,61 @@ view into a ZEO server.  A before storage is a database adapter that
 provides a read-only view of an underlying storage as of a particular
 point in time.
 
-To see how this works, we'll create a file storage, and use a before
-storage to provide views on it.
+Change history
+==============
+
+0.1 (2008-01-??)
+----------------
+
+Initial release.
+
+Using ZConfig to configure Before storages
+==========================================
+
+To use before storages from ZConfig configuration files, you need to
+import zc.beforestorage and then use a before storage section.
+
+    >>> import ZODB.config
+    >>> storage = ZODB.config.storageFromString("""
+    ...
+    ... %import zc.beforestorage
+    ...
+    ... <before>
+    ...     before 2008-01-21
+    ...     <filestorage>
+    ...         path my.fs
+    ...     </filestorage>
+    ... </before>
+    ... """)
+
+    >>> storage
+    <Before: my.fs before 2008-01-21 00:00:00.000000>
+
+    >>> storage.close()
+
+If we leave off the before option, we'll use the current time:
+
+    >>> storage = ZODB.config.storageFromString("""
+    ...
+    ... %import zc.beforestorage
+    ...
+    ... <before>
+    ...     <filestorage>
+    ...         path my.fs
+    ...     </filestorage>
+    ... </before>
+    ... """)
+
+    >>> storage
+    <Before: my.fs before 2008-01-21 18:22:48.000000>
+
+    >>> storage.close()
+
+Demonstration (doctest)
+=======================
+
+To see how this works at the Python level, we'll create a file
+storage, and use a before storage to provide views on it.
 
     >>> import ZODB.FileStorage
     >>> fs = ZODB.FileStorage.FileStorage('Data.fs')
@@ -96,7 +150,7 @@ access revisions at the before time or later:
 Let's run through the storage methods:
 
     >>> b5.getName()
-    'Data.fs before 2008-01-21 18:22:50.000000'
+    'Data.fs before 2008-01-21 18:22:56.000000'
 
     >>> b5.getSize() == fs.getSize()
     True
@@ -130,6 +184,9 @@ Let's run through the storage methods:
     >>> s1 == transactions[3]
     True
     >>> s2 == transactions[4]
+    True
+
+    >>> b5.lastTid(root._p_oid) == transactions[4]
     True
 
     >>> b5.new_oid()
@@ -172,6 +229,7 @@ Let's run through the storage methods:
     ...
     StorageTransactionError: ...
 
+    >>> b5.tpc_transaction()
     >>> b5.tpc_abort(transaction)
 
 Before storages don't support undo:
@@ -217,7 +275,7 @@ time will be used:
 The timestamp may be passed directory, or as an ISO time.  For
 example:
 
-    >>> b5 = zc.beforestorage.Before(fs, '2008-01-21T18:22:50')
+    >>> b5 = zc.beforestorage.Before(fs, '2008-01-21T18:22:56')
     >>> db5 = DB(b5)
     >>> conn5 = db5.open()
     >>> root5 = conn5.root()

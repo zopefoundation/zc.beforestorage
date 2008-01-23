@@ -82,6 +82,9 @@ class Before:
     def isReadOnly(self):
         return True
 
+    def lastTid(self, oid):
+        return self.load(oid)[1]
+
     def lastTransaction(self):
         return ZODB.utils.p64(ZODB.utils.u64(self.before)-1)
 
@@ -131,6 +134,9 @@ class Before:
 
     def tpc_finish(self, transaction, func = lambda: None):
         raise ZODB.POSException.StorageTransactionError(self, transaction)
+
+    def tpc_transaction(self):
+        return None
 
     def tpc_vote(self, transaction):
         raise ZODB.POSException.StorageTransactionError(self, transaction)
