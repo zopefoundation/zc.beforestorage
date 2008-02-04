@@ -90,6 +90,11 @@ If we leave off the before option, we'll use the current time:
 Demonstration (doctest)
 =======================
 
+Note that most people will configure the storage through ZConfig.  If
+you are one of those people, you may want to stop here. :)  The
+examples below show you how to use the storage from Python, but they
+also exercise lots of details you might not be interested in.
+
 To see how this works at the Python level, we'll create a file
 storage, and use a before storage to provide views on it.
 
