@@ -46,4 +46,13 @@ setup(
     install_requires = ['ZODB3', 'setuptools'],
     zip_safe = False,
     entry_points=entry_points,
+    classifiers = [
+        'License :: OSI Approved :: Zope Public License',
+        'Programming Language :: Python',
+        'Topic :: Database',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Operating System :: Microsoft :: Windows',
+        'Operating System :: Unix',
+        'Framework :: ZODB',
+        ],
     )
