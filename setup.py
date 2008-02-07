@@ -26,7 +26,7 @@ long_description = (
         read('src/zc/beforestorage/README.txt')
         + '\n' +
         'Download\n'
-        '--------\n'
+        '========\n'
         )
 
 open('doc.txt', 'w').write(long_description)
