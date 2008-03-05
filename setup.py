@@ -33,7 +33,7 @@ open('doc.txt', 'w').write(long_description)
 
 setup(
     name = 'zc.beforestorage',
-    version = '0.3.0dev',
+    version = '0.2.0',
     author = 'Jim Fulton',
     author_email = 'jim@zope.com',
     description = 'View storage before a given time',
