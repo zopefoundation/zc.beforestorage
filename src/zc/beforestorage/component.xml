@@ -10,11 +10,15 @@
 
     <key name="before" datatype="string" required="no">
       <description>
-        The time before which data will be read from the base storage.
-        This is of the form: YYYY-MM-DDTHH:MM:SS.SSS, where trailing
-        time data is optional. That is: YYYY-MM-DDTHH:MM:SS,
-        YYYY-MM-DDTHH:MM, YYYY-MM-DDTHH, and YYYY-MM-DD, are all valid
-        forms. 
+        The time before which data will be read from the base storage.  This is
+        of the form: YYYY-MM-DDTHH:MM:SS.SSS, where trailing time data is
+        optional. That is: YYYY-MM-DDTHH:MM:SS, YYYY-MM-DDTHH:MM,
+        YYYY-MM-DDTHH, and YYYY-MM-DD, are all valid forms.   Also valid is
+        the case-insensitive string 'now', which is the same as not passing an
+        argument.  Also, the case-insensitive argument 'startup' opens the
+        storage as of the time at module load.  This is to prevent a possible
+        window ibetween the opening of the underlying filestorage and the
+        opening of the beforestorage.
       </description>
     </key>
   </sectiontype>

@@ -88,8 +88,51 @@ If we leave off the before option, we'll use the current time:
     ... """)
 
     >>> storage
-    <Before: my.fs before 2008-01-21 18:22:48.000000>
+    <Before: my.fs before 2008-01-21 18:22:49.000000>
 
+    >>> storage.close()
+
+We can also give the option 'now' and get the current time.
+
+    >>> import ZODB.config
+    >>> storage = ZODB.config.storageFromString("""
+    ...
+    ... %import zc.beforestorage
+    ...
+    ... <before>
+    ...     before now
+    ...     <filestorage>
+    ...         path my.fs
+    ...     </filestorage>
+    ... </before>
+    ... """)
+
+    >>> storage
+    <Before: my.fs before 2008-01-21 18:22:53.000000>
+
+    >>> storage.close()
+
+We can give the option 'startup' and get the time at startup.
+
+    >>> import ZODB.config
+    >>> storage = ZODB.config.storageFromString("""
+    ...
+    ... %import zc.beforestorage
+    ...
+    ... <before>
+    ...     before startup
+    ...     <filestorage>
+    ...         path my.fs
+    ...     </filestorage>
+    ... </before>
+    ... """)
+
+    >>> storage
+    <Before: my.fs before 2008-01-21 18:22:43.000000>
+    >>> import zc.beforestorage
+    >>> import ZODB.TimeStamp
+    >>> print str(ZODB.TimeStamp.TimeStamp(zc.beforestorage.startup_time_stamp))
+    2008-01-21 18:22:43.000000
     >>> storage.close()
 
 Demonstration (doctest)
@@ -160,7 +203,7 @@ access revisions at the before time or later:
 Let's run through the storage methods:
 
     >>> b5.getName()
-    'Data.fs before 2008-01-21 18:22:56.000000'
+    'Data.fs before 2008-01-21 18:23:04.000000'
 
     >>> b5.getSize() == fs.getSize()
     True
@@ -285,7 +328,7 @@ time will be used:
 The timestamp may be passed directory, or as an ISO time.  For
 example:
 
-    >>> b5 = zc.beforestorage.Before(fs, '2008-01-21T18:22:56')
+    >>> b5 = zc.beforestorage.Before(fs, '2008-01-21T18:23:04')
     >>> db5 = DB(b5)
     >>> conn5 = db5.open()
     >>> root5 = conn5.root()

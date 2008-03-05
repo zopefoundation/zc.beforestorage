@@ -18,13 +18,19 @@ import ZODB.POSException
 import ZODB.TimeStamp
 import ZODB.utils
 
+def time_stamp():
+    t = time.time()
+    g = time.gmtime(t)
+    before = repr(ZODB.TimeStamp.TimeStamp(*(g[:5] + (g[5]+(t%1), ))))
+    return before
+
+startup_time_stamp = time_stamp()
+
 class Before:
 
     def __init__(self, storage, before=None):
         if before is None:
-            t = time.time()
-            g = time.gmtime(t)
-            before = repr(ZODB.TimeStamp.TimeStamp(*(g[:5] + (g[5]+(t%1), ))))
+            before = time_stamp()
         else:
             assert isinstance(before, basestring)
             if len(before) > 8:
@@ -39,7 +45,6 @@ class Before:
                     assert len(t) <= 3
                     d += map(int, t[:2]) + map(float, t[2:3])
                 before = repr(ZODB.TimeStamp.TimeStamp(*d))
-            
         self.storage = storage
         self.before = before
 
@@ -149,5 +154,11 @@ class ZConfig:
 
     def open(self):
         base = self.config.base.open()
+        before = self.config.before
+        if isinstance(before, basestring):
+            if before.lower() == 'now':
+                self.config.before = None
+            elif before.lower() == 'startup':
+                self.config.before = startup_time_stamp
         return Before(base, self.config.before)
     

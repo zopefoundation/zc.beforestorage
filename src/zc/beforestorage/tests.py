@@ -14,7 +14,7 @@
 import time, unittest
 from zope.testing import doctest
 import zope.testing.setupstack
-
+import zc.beforestorage
 
     
 def setUp(test):
@@ -30,6 +30,7 @@ def setUp(test):
         lambda : setattr(time, 'time', old_timetime)
         )
     time.time = timetime
+    zc.beforestorage.startup_time_stamp = zc.beforestorage.time_stamp()
 
     
 def test_suite():
