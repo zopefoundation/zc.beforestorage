@@ -40,6 +40,13 @@ point in time.
 Change history
 ==============
 
+0.3.1 (2008-12-01)
+******************
+
+Renamed lastTid to getTid to conform to the ZEO.interfaces.IServeable
+interface.
+
+
 0.3.0 (2008-12-01)
 ******************
 
@@ -256,8 +263,10 @@ Let's run through the storage methods:
     >>> s2 == transactions[4]
     True
 
-    >>> b5.lastTid(root._p_oid) == transactions[4]
+    >>> b5.getTid(root._p_oid) == transactions[4]
     True
+
+    >>> b5.tpc_transaction()
 
     >>> b5.new_oid()
     Traceback (most recent call last):

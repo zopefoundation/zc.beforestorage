@@ -94,7 +94,7 @@ class Before:
     def isReadOnly(self):
         return True
 
-    def lastTid(self, oid):
+    def getTid(self, oid):
         return self.load(oid)[1]
 
     def lastTransaction(self):
