@@ -11,8 +11,9 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import os
+name, version = 'zc.beforestorage', '0'
 
+import os
 from setuptools import setup, find_packages
 
 def read(rname):
@@ -30,8 +31,8 @@ long_description = (
         )
 
 setup(
-    name = 'zc.beforestorage',
-    version = '0.3.0dev',
+    name = name,
+    version = version,
     author = 'Jim Fulton',
     author_email = 'jim@zope.com',
     description = 'View storage before a given time',

@@ -358,7 +358,7 @@ example:
     >>> b5.close()
 
 Blob Support
-------------
+************
 
 Before storage supports blobs if the storage it wraps supports blobs,
 and, in fact, it simply exposes the underlying storages loadBlob and
