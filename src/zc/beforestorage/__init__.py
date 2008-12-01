@@ -17,6 +17,8 @@ import time
 import ZODB.POSException
 import ZODB.TimeStamp
 import ZODB.utils
+import ZODB.interfaces
+import zope.interface
 
 def time_stamp():
     t = time.time()
@@ -47,6 +49,11 @@ class Before:
                 before = repr(ZODB.TimeStamp.TimeStamp(*d))
         self.storage = storage
         self.before = before
+        if ZODB.interfaces.IBlobStorage.providedBy(storage):
+            self.loadBlob = storage.loadBlob
+            self.temporaryDirectory = storage.temporaryDirectory
+            zope.interface.alsoProvides(self, ZODB.interfaces.IBlobStorage)
+            
 
     def close(self):
         self.storage.close()
@@ -129,6 +136,10 @@ class Before:
         return self.storage.sortKey()
 
     def store(self, oid, serial, data, version, transaction):
+        raise ZODB.POSException.StorageTransactionError(self, transaction)
+
+    def storeBlob(self, oid, oldserial, data, blobfilename, version,
+                  transaction):
         raise ZODB.POSException.StorageTransactionError(self, transaction)
 
     def tpc_abort(self, transaction):

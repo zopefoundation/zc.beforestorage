@@ -40,6 +40,23 @@ point in time.
 Change history
 ==============
 
+0.3.0 (2008-12-01)
+******************
+
+Added Blob support.
+
+0.2.0 (2008-03-05)
+******************
+
+Added support for "now" and "startup" values to the before option when
+using ZConfig.  The "now" value indicates that the before storage should
+provide a view of the base storage as of the time the storage is created.
+The "startup" value indicates that the before storage should provide a
+view of the base stoage as of process startup time. The later is
+especially useful when setting up more than once before storage in a
+single application, as it allows you to arrange that all of the
+storages provide consistent views without having to specify a time.
+
 0.1.1 (2008-02-07)
 ******************
 
@@ -325,12 +342,54 @@ time will be used:
     >>> len(rootnow)
     10
 
+    >>> dbnow.close()
+
 The timestamp may be passed directory, or as an ISO time.  For
 example:
 
+    >>> fs = ZODB.FileStorage.FileStorage('Data.fs')
     >>> b5 = zc.beforestorage.Before(fs, '2008-01-21T18:23:04')
     >>> db5 = DB(b5)
     >>> conn5 = db5.open()
     >>> root5 = conn5.root()
     >>> len(root5)
     4
+
+    >>> b5.close()
+
+Blob Support
+------------
+
+Before storage supports blobs if the storage it wraps supports blobs,
+and, in fact, it simply exposes the underlying storages loadBlob and
+temporaryDirectory methods.
+
+    >>> fs = ZODB.FileStorage.FileStorage('Data.fs')
+    >>> import ZODB.blob
+    >>> bs = ZODB.blob.BlobStorage('blobs', fs)
+    >>> db = ZODB.DB(bs)
+    >>> conn = db.open()
+    >>> conn.root()['blob'] = ZODB.blob.Blob()
+    >>> conn.root()['blob'].open('w').write('data1')
+    >>> transaction.commit()
+
+    >>> bnow = zc.beforestorage.Before(bs)
+    >>> dbnow = DB(bnow)
+    >>> connnow = dbnow.open()
+    >>> rootnow = connnow.root()
+
+    >>> conn.root()['blob'].open('w').write('data2')
+    >>> transaction.commit()
+    
+    >>> rootnow['blob'].open().read()
+    'data1'
+
+    >>> bnow.temporaryDirectory() == bs.temporaryDirectory()
+    True
+
+    >>> import ZODB.interfaces, zope.interface.verify
+    >>> zope.interface.verify.verifyObject(
+    ...     ZODB.interfaces.IBlobStorage, bnow)
+    True
+
+    >>> bnow.close()
