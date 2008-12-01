@@ -11,7 +11,7 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-name, version = 'zc.beforestorage', '0'
+name, version = 'zc.beforestorage', '0.3.1'
 
 import os
 from setuptools import setup, find_packages
