@@ -31,7 +31,7 @@ long_description = (
 
 setup(
     name = 'zc.beforestorage',
-    version = '0.3.0dev',
+    version = '0.3.0',
     author = 'Jim Fulton',
     author_email = 'jim@zope.com',
     description = 'View storage before a given time',
