@@ -29,8 +29,6 @@ long_description = (
         '========\n'
         )
 
-open('doc.txt', 'w').write(long_description)
-
 setup(
     name = 'zc.beforestorage',
     version = '0.3.0dev',
