@@ -40,6 +40,11 @@ point in time.
 Change history
 ==============
 
+0.3.2 (2008-12-05)
+******************
+
+Updated to work with both ZODB 3.8 and 3.9.
+
 0.3.1 (2008-12-01)
 ******************
 
@@ -226,8 +231,9 @@ access revisions at the before time or later:
 
 Let's run through the storage methods:
 
-    >>> b5.getName()
-    'Data.fs before 2008-01-21 18:23:04.000000'
+    >>> (b5.getName() == 
+    ...  'Data.fs before %s' % ZODB.TimeStamp.TimeStamp(transactions[5]))
+    True
 
     >>> b5.getSize() == fs.getSize()
     True
@@ -357,7 +363,9 @@ The timestamp may be passed directory, or as an ISO time.  For
 example:
 
     >>> fs = ZODB.FileStorage.FileStorage('Data.fs')
-    >>> b5 = zc.beforestorage.Before(fs, '2008-01-21T18:23:04')
+    >>> iso = 'T'.join(str(ZODB.TimeStamp.TimeStamp(transactions[5])).split()
+    ...                )[:19]
+    >>> b5 = zc.beforestorage.Before(fs, iso)
     >>> db5 = DB(b5)
     >>> conn5 = db5.open()
     >>> root5 = conn5.root()

@@ -52,6 +52,9 @@ class Before:
         if ZODB.interfaces.IBlobStorage.providedBy(storage):
             self.loadBlob = storage.loadBlob
             self.temporaryDirectory = storage.temporaryDirectory
+            if hasattr(storage, 'openCommittedBlobFile'):
+                self.openCommittedBlobFile = storage.openCommittedBlobFile
+            
             zope.interface.alsoProvides(self, ZODB.interfaces.IBlobStorage)
             
 
@@ -78,7 +81,7 @@ class Before:
 
         s = size
         while 1:
-            base_history = self.storage.history(oid, version='', size=s)
+            base_history = self.storage.history(oid, size=s)
             result = [d for d in base_history
                       if d['tid'] < self.before
                       ]
