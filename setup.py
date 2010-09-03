@@ -30,6 +30,8 @@ long_description = (
         '========\n'
         )
 
+tests_require = ['zope.testing']
+
 setup(
     name = name,
     version = version,
@@ -38,7 +40,7 @@ setup(
     description = 'View storage before a given time',
     long_description=long_description,
     license = 'ZPL 2.1',
-    
+
     include_package_data = True,
     packages = find_packages('src'),
     namespace_packages = ['zc'],
@@ -46,6 +48,8 @@ setup(
     install_requires = ['ZODB3', 'setuptools'],
     zip_safe = False,
     entry_points=entry_points,
+    tests_require = tests_require,
+    extras_require = dict(test=tests_require),
     classifiers = [
         'License :: OSI Approved :: Zope Public License',
         'Programming Language :: Python',
