@@ -54,9 +54,9 @@ class Before:
             self.temporaryDirectory = storage.temporaryDirectory
             if hasattr(storage, 'openCommittedBlobFile'):
                 self.openCommittedBlobFile = storage.openCommittedBlobFile
-            
+
             zope.interface.alsoProvides(self, ZODB.interfaces.IBlobStorage)
-            
+
 
     def close(self):
         self.storage.close()
@@ -74,7 +74,7 @@ class Before:
 
     def history(self, oid, version='', size=1):
         assert version == ''
-        
+
         # This is awkward.  We don't know how much history to ask for.
         # We'll have to keep trying until we heve enough or until there isn't
         # any more to chose from. :(
@@ -134,7 +134,7 @@ class Before:
 
     def registerDB(self, db):
         pass
-    
+
     def sortKey(self):
         return self.storage.sortKey()
 
@@ -175,4 +175,4 @@ class ZConfig:
             elif before.lower() == 'startup':
                 self.config.before = startup_time_stamp
         return Before(base, self.config.before)
-    
+
