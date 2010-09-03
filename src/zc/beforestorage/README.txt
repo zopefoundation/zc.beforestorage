@@ -182,7 +182,7 @@ storage, and use a before storage to provide views on it.
     >>> conn = db.open()
     >>> root = conn.root()
     >>> import persistent.mapping
-    
+
 We'll record transaction identifiers, which we'll use to when opening
 the before storage.
 
@@ -223,7 +223,7 @@ access revisions at the before time or later:
     Traceback (most recent call last):
     ...
     POSKeyError: 0x00
-    
+
     >>> conn5.get(root[5]._p_oid)
     Traceback (most recent call last):
     ...
@@ -231,7 +231,7 @@ access revisions at the before time or later:
 
 Let's run through the storage methods:
 
-    >>> (b5.getName() == 
+    >>> (b5.getName() ==
     ...  'Data.fs before %s' % ZODB.TimeStamp.TimeStamp(transactions[5]))
     True
 
@@ -284,7 +284,7 @@ Let's run through the storage methods:
     Traceback (most recent call last):
     ...
     ReadOnlyError
-    
+
     >>> b5.registerDB(db5)
 
     >>> b5.sortKey() == fs.sortKey()
@@ -329,10 +329,10 @@ Before storages don't support undo:
 Closing a before storage closes the underlying storage:
 
     >>> b5.close()
-    >>> fs.load(root._p_oid, '')
+    >>> fs.load(root._p_oid, '') # doctest: +ELLIPSIS
     Traceback (most recent call last):
     ...
-    ValueError: I/O operation on closed file
+    ValueError: ...
 
 If we ommit a timestamp when creating a before storage, the current
 time will be used:
@@ -347,13 +347,13 @@ time will be used:
     >>> dbnow = DB(bnow)
     >>> connnow = dbnow.open()
     >>> rootnow = connnow.root()
-    
+
     >>> for i in range(1, 11):
     ...     root[i] = persistent.mapping.PersistentMapping()
     ...     transaction.get().note("trans %s" % i)
     ...     transaction.commit()
     ...     transactions.append(root._p_serial)
-    
+
     >>> len(rootnow)
     10
 
@@ -397,7 +397,7 @@ temporaryDirectory methods.
 
     >>> conn.root()['blob'].open('w').write('data2')
     >>> transaction.commit()
-    
+
     >>> rootnow['blob'].open().read()
     'data1'
 
