@@ -16,7 +16,7 @@ from zope.testing import doctest
 import zope.testing.setupstack
 import zc.beforestorage
 
-    
+
 def setUp(test):
     zope.testing.setupstack.setUpDirectory(test)
     now = [time.mktime((2008, 1, 21, 13, 22, 42, 0, 0, 0))]
@@ -32,7 +32,7 @@ def setUp(test):
     time.time = timetime
     zc.beforestorage.startup_time_stamp = zc.beforestorage.time_stamp()
 
-    
+
 def test_suite():
     return unittest.TestSuite((
         doctest.DocFileSuite(
