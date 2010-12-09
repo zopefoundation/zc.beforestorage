@@ -269,7 +269,9 @@ If we restart the storage, the value from the file will be used.
 
     >>> storage.close()
 
-This will continue to happen until we remove the file.
+This will continue to happen until we remove the file. The "before_from_file"
+path is stored on the storage itself, so applications that use it have access
+to it.
 
     >>> os.remove(storage.before_from_file)
 
