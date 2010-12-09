@@ -40,6 +40,12 @@ point in time.
 Change history
 ==============
 
+0.4.0 (2010-12-09)
+******************
+
+Added a "before-from-file" option that can be used if the application wants to
+preserve beforestorage state between application restarts.
+
 0.3.2 (2008-12-05)
 ******************
 
