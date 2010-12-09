@@ -250,6 +250,50 @@ time.
 
     >>> storage.close()
 
+If we restart the storage, the value from the file will be used.
+
+    >>> storage = ZODB.config.storageFromString("""
+    ...
+    ... %%import zc.beforestorage
+    ...
+    ... <before>
+    ...     before-from-file %s
+    ...     <filestorage>
+    ...         path my.fs
+    ...     </filestorage>
+    ... </before>
+    ... """ % before_file)
+
+    >>> storage
+    <Before: my.fs before 1990-01-01 11:11:00.000000>
+
+    >>> storage.close()
+
+This will continue to happen until we remove the file.
+
+    >>> os.remove(storage.before_from_file)
+
+    >>> os.path.exists(before_file)
+    False
+
+If we restart the storage again, a new file will be created.
+
+    >>> storage = ZODB.config.storageFromString("""
+    ...
+    ... %%import zc.beforestorage
+    ...
+    ... <before>
+    ...     before-from-file %s
+    ...     <filestorage>
+    ...         path my.fs
+    ...     </filestorage>
+    ... </before>
+    ... """ % before_file)
+
+    >>> storage
+    <Before: my.fs before 2008-01-01 15:00:00.000000>
+
+    >>> storage.close()
 
 Note that unlike the "before" option, the "before-from-file" file cannot
 contain special values such as "now" or "startup".

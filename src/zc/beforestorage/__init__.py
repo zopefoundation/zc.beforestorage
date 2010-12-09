@@ -13,6 +13,7 @@
 ##############################################################################
 
 import datetime
+import os
 import os.path
 import time
 
@@ -35,7 +36,16 @@ startup_time_stamp = time_stamp()
 
 class Before:
 
-    def __init__(self, storage, before=None):
+    def __init__(self, storage, before=None, before_from_file=None):
+        if before_from_file:
+            if os.path.exists(before_from_file):
+                f = open(before_from_file)
+                before = f.read()
+            else:
+                f = open(before_from_file, 'w')
+                before = get_utcnow().replace(microsecond=0).isoformat()
+                f.write(before)
+            f.close()
         if before is None:
             before = time_stamp()
         else:
@@ -54,6 +64,7 @@ class Before:
                 before = repr(ZODB.TimeStamp.TimeStamp(*d))
         self.storage = storage
         self.before = before
+        self.before_from_file = before_from_file
         if ZODB.interfaces.IBlobStorage.providedBy(storage):
             self.loadBlob = storage.loadBlob
             self.temporaryDirectory = storage.temporaryDirectory
@@ -61,7 +72,6 @@ class Before:
                 self.openCommittedBlobFile = storage.openCommittedBlobFile
 
             zope.interface.alsoProvides(self, ZODB.interfaces.IBlobStorage)
-
 
     def close(self):
         self.storage.close()
@@ -179,21 +189,12 @@ class ZConfig:
             raise ValueError(
                 'Only one of "before" or "before-from-file" options '
                 'can be specified, not both')
-        if before and isinstance(before, basestring):
+        if isinstance(before, basestring):
             if before.lower() == 'now':
                 self.config.before = None
             elif before.lower() == 'startup':
                 self.config.before = startup_time_stamp
-        elif before_from_file:
-            if os.path.exists(before_from_file):
-                f = open(before_from_file)
-                self.config.before = f.read()
-            else:
-                f = open(before_from_file, 'w')
-                self.config.before = get_utcnow().replace(microsecond=0).isoformat()
-                f.write(self.config.before)
-            f.close()
-        return Before(base, self.config.before)
+        return Before(base, self.config.before, self.config.before_from_file)
 
 
 
