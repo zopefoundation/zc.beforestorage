@@ -82,6 +82,9 @@ Initial release.
 Using ZConfig to configure Before storages
 ==========================================
 
+"before" option
+---------------
+
 To use before storages from ZConfig configuration files, you need to
 import zc.beforestorage and then use a before storage section.
 
@@ -163,6 +166,144 @@ We can give the option 'startup' and get the time at startup.
     >>> print str(ZODB.TimeStamp.TimeStamp(zc.beforestorage.startup_time_stamp))
     2008-01-21 18:22:43.000000
     >>> storage.close()
+
+
+"before-from-file" option
+-------------------------
+
+The "before-from-file" option can be used to preserve the changes file between
+restarts. It's value is the absolute path to a file. If the file exists, the
+"before" time will be read from that file. If the file does not exist,
+it will be created and the current UTC time will be written to it
+
+When used with a Changes file that does NOT have the "create=true"
+option set, the database will be preserved between restarts.
+
+    >>> import os.path
+    >>> import tempfile
+
+    >>> tempdir = tempfile.mkdtemp()
+    >>> before_file = os.path.join(tempdir, 'before-file')
+
+Currently the file does not exist. So it'll be created and written with the
+current time. In order to make this repeatable, we "monkeypatch" the "get_now"
+function in the module to return a fixed value:
+
+    >>> import datetime
+    >>> import zc.beforestorage
+
+    >>> def fake_get_utcnow():
+    ...     return datetime.datetime(2008, 1, 1, 15, 0)
+    >>> orig_get_utcnow = zc.beforestorage.get_utcnow
+    >>> zc.beforestorage.get_utcnow = fake_get_utcnow
+
+    >>> os.path.exists(before_file)
+    False
+
+    >>> storage = ZODB.config.storageFromString("""
+    ...
+    ... %%import zc.beforestorage
+    ...
+    ... <before>
+    ...     before-from-file %s
+    ...     <filestorage>
+    ...         path my.fs
+    ...     </filestorage>
+    ... </before>
+    ... """ % before_file)
+
+    >>> storage
+    <Before: my.fs before 2008-01-01 15:00:00.000000>
+
+    >>> storage.close()
+
+The file will now have been created:
+
+    >>> os.path.exists(before_file)
+    True
+
+    >>> f = open(before_file)
+    >>> f.read() == fake_get_utcnow().replace(microsecond=0).isoformat()
+    True
+
+If we now write a new value to the file, the storage will be started with that
+time.
+
+    >>> f = open(before_file, 'w')
+    >>> f.write('1990-01-01T11:11')
+    >>> f.close()
+
+    >>> storage = ZODB.config.storageFromString("""
+    ...
+    ... %%import zc.beforestorage
+    ...
+    ... <before>
+    ...     before-from-file %s
+    ...     <filestorage>
+    ...         path my.fs
+    ...     </filestorage>
+    ... </before>
+    ... """ % before_file)
+
+    >>> storage
+    <Before: my.fs before 1990-01-01 11:11:00.000000>
+
+    >>> storage.close()
+
+
+Note that unlike the "before" option, the "before-from-file" file cannot
+contain special values such as "now" or "startup".
+
+    >>> f = open(before_file, 'w')
+    >>> f.write('now')
+    >>> f.close()
+
+    >>> storage = ZODB.config.storageFromString("""
+    ...
+    ... %%import zc.beforestorage
+    ...
+    ... <before>
+    ...     before-from-file %s
+    ...     <filestorage>
+    ...         path my.fs
+    ...     </filestorage>
+    ... </before>
+    ... """ % before_file)
+
+    >>> storage
+    Traceback (most recent call last):
+      ...
+    ValueError: 8-character string expected
+
+    >>> storage.close()
+
+Note that only one of "before" or "before-from-file" options can be specified,
+not both:
+
+    >>> storage = ZODB.config.storageFromString("""
+    ...
+    ... %%import zc.beforestorage
+    ...
+    ... <before>
+    ...     before 2008-01-01
+    ...     before-from-file %s
+    ...     <filestorage>
+    ...         path my.fs
+    ...     </filestorage>
+    ... </before>
+    ... """ % before_file)
+    Traceback (most recent call last):
+      ...
+    ValueError: Only one of "before" or "before-from-file" options can be specified, not both
+
+
+Cleanup...
+
+    >>> import shutil
+    >>> shutil.rmtree(tempdir)
+
+    >>> zc.beforestorage.get_utcnow = orig_get_utcnow
+
 
 Demonstration (doctest)
 =======================
