@@ -21,6 +21,15 @@
         opening of the beforestorage.
       </description>
     </key>
+    <key name="before-from-file" datatype="string" required="no">
+      <description>
+        An absolute path to a file used to track the 'before' time. If the file
+        exists it should contain the before time to use. Note that unlike the
+        'before' option, 'now' and 'startup' cannot be used here.
+        If the file does not exist, it'll be created and written with the
+        current time.
+      </description>
+    </key>
   </sectiontype>
 
 </component>

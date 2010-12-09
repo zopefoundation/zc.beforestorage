@@ -12,6 +12,8 @@
 #
 ##############################################################################
 
+import datetime
+import os.path
 import time
 
 import ZODB.POSException
@@ -25,6 +27,9 @@ def time_stamp():
     g = time.gmtime(t)
     before = repr(ZODB.TimeStamp.TimeStamp(*(g[:5] + (g[5]+(t%1), ))))
     return before
+
+def get_utcnow():
+    return datetime.datetime.utcnow()
 
 startup_time_stamp = time_stamp()
 
@@ -169,10 +174,28 @@ class ZConfig:
     def open(self):
         base = self.config.base.open()
         before = self.config.before
-        if isinstance(before, basestring):
+        before_from_file = self.config.before_from_file
+        if (before and before_from_file):
+            raise ValueError(
+                'Only one of "before" or "before-from-file" options '
+                'can be specified, not both')
+        if before and isinstance(before, basestring):
             if before.lower() == 'now':
                 self.config.before = None
             elif before.lower() == 'startup':
                 self.config.before = startup_time_stamp
-        return Before(base, self.config.before)
+        elif before_from_file:
+            if os.path.exists(before_from_file):
+                f = open(before_from_file)
+                self.config.before = f.read()
+            else:
+                f = open(before_from_file, 'w')
+                self.config.before = get_utcnow().replace(microsecond=0).isoformat()
+                f.write(self.config.before)
+            f.close()
+        before_storage = Before(base, self.config.before)
+        before_storage.before_from_file = self.config.before_from_file
+        return before_storage
+
+
 
