@@ -28,7 +28,7 @@ roll-back database state after a test to a non-empty state before a
 test.  A significant limitation of demo storages is that they can't be
 used with base storages that change.  This means that they generaly
 can't be used with ZEO.  It isn't enough to have a read-only
-connecttions, if the underlying database is still being changed by
+connections, if the underlying database is still being changed by
 other clients.
 
 The "before" storage provides another way to leverage the loadBefore
