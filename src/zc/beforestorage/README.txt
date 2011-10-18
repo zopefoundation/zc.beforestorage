@@ -41,30 +41,30 @@ Change history
 ==============
 
 0.4.0 (2010-12-09)
-******************
+------------------
 
 Added a "before-from-file" option that can be used if the application wants to
 preserve beforestorage state between application restarts.
 
 0.3.2 (2008-12-05)
-******************
+------------------
 
 Updated to work with both ZODB 3.8 and 3.9.
 
 0.3.1 (2008-12-01)
-******************
+------------------
 
 Renamed lastTid to getTid to conform to the ZEO.interfaces.IServeable
 interface.
 
 
 0.3.0 (2008-12-01)
-******************
+------------------
 
 Added Blob support.
 
 0.2.0 (2008-03-05)
-******************
+------------------
 
 Added support for "now" and "startup" values to the before option when
 using ZConfig.  The "now" value indicates that the before storage should
@@ -76,7 +76,7 @@ single application, as it allows you to arrange that all of the
 storages provide consistent views without having to specify a time.
 
 0.1.1 (2008-02-07)
-******************
+------------------
 
 Fixed a packaging bug that caused some files to be omitted.
 
@@ -568,7 +568,7 @@ example:
     >>> b5.close()
 
 Blob Support
-************
+------------
 
 Before storage supports blobs if the storage it wraps supports blobs,
 and, in fact, it simply exposes the underlying storages loadBlob and
