@@ -324,7 +324,7 @@ contain special values such as "now" or "startup".
     ... """ % before_file)
     Traceback (most recent call last):
     ...
-    ValueError: invalid literal for int() with base 10: 'now'
+    ValueError: 8-character string expected
 
 Note that only one of "before" or "before-from-file" options can be specified,
 not both:

@@ -39,17 +39,21 @@ class Before:
         if before is None:
             before = time_stamp().raw()
         elif isinstance(before, str):
-            if 'T' in before:
-                d, t = before.split('T')
-            else:
-                d, t = before, ''
+            if len(before) > 8:
+                if 'T' in before:
+                    d, t = before.split('T')
+                else:
+                    d, t = before, ''
 
-            d = list(map(int, d.split('-')))
-            if t:
-                t = t.split(':')
-                assert len(t) <= 3
-                d += list(map(int, t[:2])) + list(map(float, t[2:3]))
-            before = ZODB.TimeStamp.TimeStamp(*d).raw()
+                d = list(map(int, d.split('-')))
+                if t:
+                    t = t.split(':')
+                    assert len(t) <= 3
+                    d += list(map(int, t[:2])) + list(map(float, t[2:3]))
+                before = ZODB.TimeStamp.TimeStamp(*d).raw()
+            else:
+                # Try converting to a timestamp
+                ZODB.TimeStamp.TimeStamp(before)
         self.storage = storage
         self.before = before
         if ZODB.interfaces.IBlobStorage.providedBy(storage):
