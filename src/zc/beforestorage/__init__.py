@@ -33,12 +33,11 @@ def get_utcnow():
     return datetime.datetime.utcnow()
 
 startup_time_stamp = time_stamp()
-
 class Before:
 
     def __init__(self, storage, before=None):
         if before is None:
-            before = time_stamp()
+            before = time_stamp().raw()
         elif isinstance(before, str):
             if 'T' in before:
                 d, t = before.split('T')
@@ -50,9 +49,7 @@ class Before:
                 t = t.split(':')
                 assert len(t) <= 3
                 d += list(map(int, t[:2])) + list(map(float, t[2:3]))
-            before = ZODB.TimeStamp.TimeStamp(*d)
-        elif isinstance(before, bytes):
-            before = ZODB.TimeStamp.TimeStamp(before)
+            before = ZODB.TimeStamp.TimeStamp(*d).raw()
         self.storage = storage
         self.before = before
         if ZODB.interfaces.IBlobStorage.providedBy(storage):
@@ -69,7 +66,7 @@ class Before:
 
     def getName(self):
         return "%s before %s" % (self.storage.getName(),
-                                 str(self.before),
+                                 str(ZODB.TimeStamp.TimeStamp(self.before)),
                                  )
 
     def __repr__(self):
@@ -89,7 +86,7 @@ class Before:
         while 1:
             base_history = self.storage.history(oid, size=s)
             result = [d for d in base_history
-                      if d['tid'] < self.before.raw()
+                      if d['tid'] < self.before
                       ]
             if ((len(base_history) < s)
                 or
@@ -107,28 +104,28 @@ class Before:
         return self.load(oid)[1]
 
     def lastTransaction(self):
-        return ZODB.utils.p64(ZODB.utils.u64(self.before.raw())-1)
+        return ZODB.utils.p64(ZODB.utils.u64(self.before)-1)
 
     def __len__(self):
         return len(self.storage)
 
     def load(self, oid, version=''):
         assert version == ''
-        result = self.storage.loadBefore(oid, self.before.raw())
+        result = self.storage.loadBefore(oid, self.before)
         if result:
             return result[:2]
         raise ZODB.POSException.POSKeyError(oid)
 
     def loadBefore(self, oid, tid):
-        if self.before.raw() < tid:
+        if self.before < tid:
             tid = self.before
         p, s1, s2 = self.storage.loadBefore(oid, tid)
-        if (s2 is not None) and (s2 >= self.before.raw()):
+        if (s2 is not None) and (s2 >= self.before):
             s2 = None
         return p, s1, s2
 
     def loadSerial(self, oid, serial):
-        if serial >= self.before.raw():
+        if serial >= self.before:
             raise ZODB.POSException.POSKeyError(oid)
         return self.storage.loadSerial(oid, serial)
 
@@ -184,7 +181,7 @@ class ZConfig:
             if before.lower() == 'now':
                 self.config.before = None
             elif before.lower() == 'startup':
-                self.config.before = startup_time_stamp
+                self.config.before = startup_time_stamp.raw()
         elif before_from_file:
             if os.path.exists(before_from_file):
                 f = open(before_from_file)
