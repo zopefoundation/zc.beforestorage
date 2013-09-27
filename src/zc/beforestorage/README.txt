@@ -169,7 +169,8 @@ We can give the option 'startup' and get the time at startup.
     <Before: my.fs before 2008-01-21 18:22:43.000000>
     >>> import zc.beforestorage
     >>> import ZODB.TimeStamp
-    >>> print str(ZODB.TimeStamp.TimeStamp(zc.beforestorage.startup_time_stamp))
+    >>> print(
+    ...     str(zc.beforestorage.startup_time_stamp))
     2008-01-21 18:22:43.000000
     >>> storage.close()
 
@@ -236,7 +237,7 @@ If we now write a new value to the file, the storage will be started with that
 time.
 
     >>> f = open(before_file, 'w')
-    >>> f.write('1990-01-01T11:11')
+    >>> _ = f.write('1990-01-01T11:11')
     >>> f.close()
 
     >>> storage = ZODB.config.storageFromString("""
@@ -307,7 +308,7 @@ Note that unlike the "before" option, the "before-from-file" file cannot
 contain special values such as "now" or "startup".
 
     >>> f = open(before_file, 'w')
-    >>> f.write('now')
+    >>> _ = f.write('now')
     >>> f.close()
 
     >>> storage = ZODB.config.storageFromString("""
@@ -321,13 +322,9 @@ contain special values such as "now" or "startup".
     ...     </filestorage>
     ... </before>
     ... """ % before_file)
-
-    >>> storage
     Traceback (most recent call last):
-      ...
-    ValueError: 8-character string expected
-
-    >>> storage.close()
+    ...
+    ValueError: invalid literal for int() with base 10: 'now'
 
 Note that only one of "before" or "before-from-file" options can be specified,
 not both:
@@ -405,7 +402,7 @@ POSKeyError:
     >>> conn5.get(root[5]._p_oid)
     Traceback (most recent call last):
     ...
-    POSKeyError: 0x05
+    ZODB.POSException.POSKeyError: 0x05
 
 Similarly, while we can access earlier object revisions, we can't
 access revisions at the before time or later:
@@ -415,12 +412,12 @@ access revisions at the before time or later:
     >>> b5.loadSerial(root._p_oid, transactions[5])
     Traceback (most recent call last):
     ...
-    POSKeyError: 0x00
+    ZODB.POSException.POSKeyError: 0x00
 
     >>> conn5.get(root[5]._p_oid)
     Traceback (most recent call last):
     ...
-    POSKeyError: 0x05
+    ZODB.POSException.POSKeyError: 0x05
 
 Let's run through the storage methods:
 
@@ -432,10 +429,10 @@ Let's run through the storage methods:
     True
 
     >>> for hd in b5.history(root._p_oid, size=3):
-    ...     print hd['description']
-    trans 4
-    trans 3
-    trans 2
+    ...     print(hd['description'])
+    b'trans 4'
+    b'trans 3'
+    b'trans 2'
 
     >>> b5.isReadOnly()
     True
@@ -470,13 +467,13 @@ Let's run through the storage methods:
     >>> b5.new_oid()
     Traceback (most recent call last):
     ...
-    ReadOnlyError
+    ZODB.POSException.ReadOnlyError
 
     >>> from ZODB.TimeStamp import TimeStamp
     >>> b5.pack(TimeStamp(transactions[3]).timeTime(), lambda p: [])
     Traceback (most recent call last):
     ...
-    ReadOnlyError
+    ZODB.POSException.ReadOnlyError
 
     >>> b5.registerDB(db5)
 
@@ -486,26 +483,26 @@ Let's run through the storage methods:
     >>> b5.tpc_begin(transaction.get())
     Traceback (most recent call last):
     ...
-    ReadOnlyError
+    ZODB.POSException.ReadOnlyError
 
     >>> b5.store(root._p_oid, transactions[4], b5.load(root._p_oid)[0], '',
     ...          transaction.get())
     ... # doctest: +ELLIPSIS
     Traceback (most recent call last):
     ...
-    StorageTransactionError: ...
+    ZODB.POSException.StorageTransactionError: ...
 
     >>> b5.tpc_vote(transaction.get())
     ... # doctest: +ELLIPSIS
     Traceback (most recent call last):
     ...
-    StorageTransactionError: ...
+    ZODB.POSException.StorageTransactionError: ...
 
     >>> b5.tpc_finish(transaction)
     ... # doctest: +ELLIPSIS
     Traceback (most recent call last):
     ...
-    StorageTransactionError: ...
+    ZODB.POSException.StorageTransactionError: ...
 
     >>> b5.tpc_transaction()
     >>> b5.tpc_abort(transaction)
@@ -515,7 +512,7 @@ Before storages don't support undo:
     >>> b5.supportsUndo
     Traceback (most recent call last):
     ...
-    AttributeError: Before instance has no attribute 'supportsUndo'
+    AttributeError: 'Before' object has no attribute 'supportsUndo'
 
 (Don't even ask about versions. :)
 
@@ -580,7 +577,7 @@ temporaryDirectory methods.
     >>> db = ZODB.DB(bs)
     >>> conn = db.open()
     >>> conn.root()['blob'] = ZODB.blob.Blob()
-    >>> conn.root()['blob'].open('w').write('data1')
+    >>> _ = conn.root()['blob'].open('w').write(b'data1')
     >>> transaction.commit()
 
     >>> bnow = zc.beforestorage.Before(bs)
@@ -588,11 +585,11 @@ temporaryDirectory methods.
     >>> connnow = dbnow.open()
     >>> rootnow = connnow.root()
 
-    >>> conn.root()['blob'].open('w').write('data2')
+    >>> _ = conn.root()['blob'].open('w').write(b'data2')
     >>> transaction.commit()
 
     >>> rootnow['blob'].open().read()
-    'data1'
+    b'data1'
 
     >>> bnow.temporaryDirectory() == bs.temporaryDirectory()
     True

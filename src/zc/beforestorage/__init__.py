@@ -18,14 +18,15 @@ import time
 
 import ZODB.POSException
 import ZODB.TimeStamp
-import ZODB.utils
 import ZODB.interfaces
+import ZODB.utils
+import persistent
 import zope.interface
 
 def time_stamp():
     t = time.time()
     g = time.gmtime(t)
-    before = repr(ZODB.TimeStamp.TimeStamp(*(g[:5] + (g[5]+(t%1), ))))
+    before = ZODB.TimeStamp.TimeStamp(*(g[:5] + (g[5]+(t%1), )))
     return before
 
 def get_utcnow():
@@ -38,20 +39,20 @@ class Before:
     def __init__(self, storage, before=None):
         if before is None:
             before = time_stamp()
-        else:
-            assert isinstance(before, basestring)
-            if len(before) > 8:
-                if 'T' in before:
-                    d, t = before.split('T')
-                else:
-                    d, t = before, ''
+        elif isinstance(before, str):
+            if 'T' in before:
+                d, t = before.split('T')
+            else:
+                d, t = before, ''
 
-                d = map(int, d.split('-'))
-                if t:
-                    t = t.split(':')
-                    assert len(t) <= 3
-                    d += map(int, t[:2]) + map(float, t[2:3])
-                before = repr(ZODB.TimeStamp.TimeStamp(*d))
+            d = list(map(int, d.split('-')))
+            if t:
+                t = t.split(':')
+                assert len(t) <= 3
+                d += list(map(int, t[:2])) + list(map(float, t[2:3]))
+            before = ZODB.TimeStamp.TimeStamp(*d)
+        elif isinstance(before, bytes):
+            before = ZODB.TimeStamp.TimeStamp(before)
         self.storage = storage
         self.before = before
         if ZODB.interfaces.IBlobStorage.providedBy(storage):
@@ -68,7 +69,7 @@ class Before:
 
     def getName(self):
         return "%s before %s" % (self.storage.getName(),
-                                 ZODB.TimeStamp.TimeStamp(self.before),
+                                 str(self.before),
                                  )
 
     def __repr__(self):
@@ -88,7 +89,7 @@ class Before:
         while 1:
             base_history = self.storage.history(oid, size=s)
             result = [d for d in base_history
-                      if d['tid'] < self.before
+                      if d['tid'] < self.before.raw()
                       ]
             if ((len(base_history) < s)
                 or
@@ -106,28 +107,28 @@ class Before:
         return self.load(oid)[1]
 
     def lastTransaction(self):
-        return ZODB.utils.p64(ZODB.utils.u64(self.before)-1)
+        return ZODB.utils.p64(ZODB.utils.u64(self.before.raw())-1)
 
     def __len__(self):
         return len(self.storage)
 
     def load(self, oid, version=''):
         assert version == ''
-        result = self.storage.loadBefore(oid, self.before)
+        result = self.storage.loadBefore(oid, self.before.raw())
         if result:
             return result[:2]
         raise ZODB.POSException.POSKeyError(oid)
 
     def loadBefore(self, oid, tid):
-        if self.before < tid:
+        if self.before.raw() < tid:
             tid = self.before
         p, s1, s2 = self.storage.loadBefore(oid, tid)
-        if (s2 is not None) and (s2 >= self.before):
+        if (s2 is not None) and (s2 >= self.before.raw()):
             s2 = None
         return p, s1, s2
 
     def loadSerial(self, oid, serial):
-        if serial >= self.before:
+        if serial >= self.before.raw():
             raise ZODB.POSException.POSKeyError(oid)
         return self.storage.loadSerial(oid, serial)
 
@@ -172,14 +173,14 @@ class ZConfig:
         self.name = config.getSectionName()
 
     def open(self):
-        base = self.config.base.open()
         before = self.config.before
         before_from_file = self.config.before_from_file
         if (before and before_from_file):
             raise ValueError(
                 'Only one of "before" or "before-from-file" options '
                 'can be specified, not both')
-        if before and isinstance(before, basestring):
+        base = self.config.base.open()
+        if before and isinstance(before, str):
             if before.lower() == 'now':
                 self.config.before = None
             elif before.lower() == 'startup':
@@ -196,6 +197,3 @@ class ZConfig:
         before_storage = Before(base, self.config.before)
         before_storage.before_from_file = self.config.before_from_file
         return before_storage
-
-
-
