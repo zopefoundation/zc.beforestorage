@@ -40,6 +40,13 @@ point in time.
 Change history
 ==============
 
+
+Unreleased
+----------
+
+- Add support for Python 3 and ZODB 4.
+
+
 0.4.0 (2010-12-09)
 ------------------
 
