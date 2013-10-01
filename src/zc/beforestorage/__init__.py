@@ -53,6 +53,8 @@ class Before:
                 before = ZODB.TimeStamp.TimeStamp(*d).raw()
             else:
                 # Try converting to a timestamp
+                if len(before) != 8:
+                    raise ValueError("8-byte array expected")
                 ZODB.TimeStamp.TimeStamp(before)
         self.storage = storage
         self.before = before

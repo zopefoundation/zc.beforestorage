@@ -38,9 +38,9 @@ def test_suite():
         doctest.DocFileSuite(
             'README.txt',
             setUp=setUp, tearDown=zope.testing.setupstack.tearDown,
+            optionflags=doctest.IGNORE_EXCEPTION_DETAIL,
             ),
         ))
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
-

@@ -324,7 +324,7 @@ contain special values such as "now" or "startup".
     ... """ % before_file)
     Traceback (most recent call last):
     ...
-    ValueError: 8-character string expected
+    ValueError: 8-byte array expected
 
 Note that only one of "before" or "before-from-file" options can be specified,
 not both:
@@ -402,7 +402,7 @@ POSKeyError:
     >>> conn5.get(root[5]._p_oid)
     Traceback (most recent call last):
     ...
-    ZODB.POSException.POSKeyError: 0x05
+    POSKeyError: 0x05
 
 Similarly, while we can access earlier object revisions, we can't
 access revisions at the before time or later:
@@ -412,12 +412,12 @@ access revisions at the before time or later:
     >>> b5.loadSerial(root._p_oid, transactions[5])
     Traceback (most recent call last):
     ...
-    ZODB.POSException.POSKeyError: 0x00
+    POSKeyError: 0x00
 
     >>> conn5.get(root[5]._p_oid)
     Traceback (most recent call last):
     ...
-    ZODB.POSException.POSKeyError: 0x05
+    POSKeyError: 0x05
 
 Let's run through the storage methods:
 
@@ -429,10 +429,10 @@ Let's run through the storage methods:
     True
 
     >>> for hd in b5.history(root._p_oid, size=3):
-    ...     print(hd['description'])
-    b'trans 4'
-    b'trans 3'
-    b'trans 2'
+    ...     print(hd['description'].decode('utf-8'))
+    trans 4
+    trans 3
+    trans 2
 
     >>> b5.isReadOnly()
     True
@@ -464,33 +464,36 @@ Let's run through the storage methods:
 
     >>> b5.tpc_transaction()
 
-    >>> b5.new_oid()
-    Traceback (most recent call last):
-    ...
-    ZODB.POSException.ReadOnlyError
+    >>> try:
+    ...     b5.new_oid()
+    ... except Exception as e: # Workaround http://bugs.python.org/issue19138
+    ...     print(e.__class__.__name__)
+    ReadOnlyError
 
     >>> from ZODB.TimeStamp import TimeStamp
-    >>> b5.pack(TimeStamp(transactions[3]).timeTime(), lambda p: [])
-    Traceback (most recent call last):
-    ...
-    ZODB.POSException.ReadOnlyError
+    >>> try:
+    ...     b5.pack(TimeStamp(transactions[3]).timeTime(), lambda p: [])
+    ... except Exception as e:
+    ...     print(e.__class__.__name__)
+    ReadOnlyError
 
     >>> b5.registerDB(db5)
 
     >>> b5.sortKey() == fs.sortKey()
     True
 
-    >>> b5.tpc_begin(transaction.get())
-    Traceback (most recent call last):
-    ...
-    ZODB.POSException.ReadOnlyError
+    >>> try:
+    ...     b5.tpc_begin(transaction.get())
+    ... except Exception as e:
+    ...     print(e.__class__.__name__)
+    ReadOnlyError
 
     >>> b5.store(root._p_oid, transactions[4], b5.load(root._p_oid)[0], '',
     ...          transaction.get())
     ... # doctest: +ELLIPSIS
     Traceback (most recent call last):
     ...
-    ZODB.POSException.StorageTransactionError: ...
+    StorageTransactionError: ...
 
     >>> b5.tpc_vote(transaction.get())
     ... # doctest: +ELLIPSIS
@@ -588,8 +591,8 @@ temporaryDirectory methods.
     >>> _ = conn.root()['blob'].open('w').write(b'data2')
     >>> transaction.commit()
 
-    >>> rootnow['blob'].open().read()
-    b'data1'
+    >>> print(rootnow['blob'].open().read().decode('utf-8'))
+    data1
 
     >>> bnow.temporaryDirectory() == bs.temporaryDirectory()
     True
