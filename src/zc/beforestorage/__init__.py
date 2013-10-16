@@ -72,7 +72,7 @@ class Before:
 
     def getName(self):
         return "%s before %s" % (self.storage.getName(),
-                                 str(ZODB.TimeStamp.TimeStamp(self.before)),
+                                 ZODB.TimeStamp.TimeStamp(self.before),
                                  )
 
     def __repr__(self):
