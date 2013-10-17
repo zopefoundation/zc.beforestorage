@@ -6,7 +6,7 @@ env:
     - ZODB=ZODB
     - ZODB=ZODB3
 install:
-    - travis_retry pip install $ZODB zope.testing
+    - travis_retry pip install $ZODB zope.testing zope.testrunner
     - travis_retry pip install -e .
 script:
     - zope-testrunner --test-path=src --auto-color --auto-progress
