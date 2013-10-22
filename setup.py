@@ -45,7 +45,7 @@ setup(
     packages = find_packages('src'),
     namespace_packages = ['zc'],
     package_dir = {'': 'src'},
-    install_requires = ['ZODB3', 'setuptools'],
+    install_requires = ['setuptools'],
     zip_safe = False,
     entry_points=entry_points,
     tests_require = tests_require,

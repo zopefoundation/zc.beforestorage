@@ -19,7 +19,7 @@ import zc.beforestorage
 
 def setUp(test):
     zope.testing.setupstack.setUpDirectory(test)
-    now = [time.mktime((2008, 1, 21, 13, 22, 42, 0, 0, 0))]
+    now = [1200939762]
     def timetime():
         now[0] += 1
         return now[0]
@@ -38,9 +38,9 @@ def test_suite():
         doctest.DocFileSuite(
             'README.txt',
             setUp=setUp, tearDown=zope.testing.setupstack.tearDown,
+            optionflags=doctest.IGNORE_EXCEPTION_DETAIL,
             ),
         ))
 
 if __name__ == '__main__':
     unittest.main(defaultTest='test_suite')
-

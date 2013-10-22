@@ -18,40 +18,43 @@ import time
 
 import ZODB.POSException
 import ZODB.TimeStamp
-import ZODB.utils
 import ZODB.interfaces
+import ZODB.utils
+import persistent
 import zope.interface
 
 def time_stamp():
     t = time.time()
     g = time.gmtime(t)
-    before = repr(ZODB.TimeStamp.TimeStamp(*(g[:5] + (g[5]+(t%1), ))))
+    before = ZODB.TimeStamp.TimeStamp(*(g[:5] + (g[5]+(t%1), )))
     return before
 
 def get_utcnow():
     return datetime.datetime.utcnow()
 
 startup_time_stamp = time_stamp()
-
 class Before:
 
     def __init__(self, storage, before=None):
         if before is None:
-            before = time_stamp()
-        else:
-            assert isinstance(before, basestring)
+            before = time_stamp().raw()
+        elif isinstance(before, str):
             if len(before) > 8:
                 if 'T' in before:
                     d, t = before.split('T')
                 else:
                     d, t = before, ''
 
-                d = map(int, d.split('-'))
+                d = list(map(int, d.split('-')))
                 if t:
                     t = t.split(':')
                     assert len(t) <= 3
-                    d += map(int, t[:2]) + map(float, t[2:3])
-                before = repr(ZODB.TimeStamp.TimeStamp(*d))
+                    d += list(map(int, t[:2])) + list(map(float, t[2:3]))
+                before = ZODB.TimeStamp.TimeStamp(*d).raw()
+            else:
+                # Try converting to a timestamp
+                if len(before) != 8:
+                    raise ValueError("8-byte array expected")
         self.storage = storage
         self.before = before
         if ZODB.interfaces.IBlobStorage.providedBy(storage):
@@ -172,18 +175,18 @@ class ZConfig:
         self.name = config.getSectionName()
 
     def open(self):
-        base = self.config.base.open()
         before = self.config.before
         before_from_file = self.config.before_from_file
         if (before and before_from_file):
             raise ValueError(
                 'Only one of "before" or "before-from-file" options '
                 'can be specified, not both')
-        if before and isinstance(before, basestring):
+        base = self.config.base.open()
+        if before and isinstance(before, str):
             if before.lower() == 'now':
                 self.config.before = None
             elif before.lower() == 'startup':
-                self.config.before = startup_time_stamp
+                self.config.before = startup_time_stamp.raw()
         elif before_from_file:
             if os.path.exists(before_from_file):
                 f = open(before_from_file)
@@ -196,6 +199,3 @@ class ZConfig:
         before_storage = Before(base, self.config.before)
         before_storage.before_from_file = self.config.before_from_file
         return before_storage
-
-
-

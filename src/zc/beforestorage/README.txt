@@ -40,6 +40,13 @@ point in time.
 Change history
 ==============
 
+
+Unreleased
+----------
+
+- Add support for Python 3 and ZODB 4.
+
+
 0.4.0 (2010-12-09)
 ------------------
 
@@ -169,7 +176,8 @@ We can give the option 'startup' and get the time at startup.
     <Before: my.fs before 2008-01-21 18:22:43.000000>
     >>> import zc.beforestorage
     >>> import ZODB.TimeStamp
-    >>> print str(ZODB.TimeStamp.TimeStamp(zc.beforestorage.startup_time_stamp))
+    >>> print(
+    ...     str(zc.beforestorage.startup_time_stamp))
     2008-01-21 18:22:43.000000
     >>> storage.close()
 
@@ -236,7 +244,7 @@ If we now write a new value to the file, the storage will be started with that
 time.
 
     >>> f = open(before_file, 'w')
-    >>> f.write('1990-01-01T11:11')
+    >>> _ = f.write('1990-01-01T11:11')
     >>> f.close()
 
     >>> storage = ZODB.config.storageFromString("""
@@ -307,7 +315,7 @@ Note that unlike the "before" option, the "before-from-file" file cannot
 contain special values such as "now" or "startup".
 
     >>> f = open(before_file, 'w')
-    >>> f.write('now')
+    >>> _ = f.write('now')
     >>> f.close()
 
     >>> storage = ZODB.config.storageFromString("""
@@ -321,13 +329,9 @@ contain special values such as "now" or "startup".
     ...     </filestorage>
     ... </before>
     ... """ % before_file)
-
-    >>> storage
     Traceback (most recent call last):
-      ...
-    ValueError: 8-character string expected
-
-    >>> storage.close()
+    ...
+    ValueError: 8-byte array expected
 
 Note that only one of "before" or "before-from-file" options can be specified,
 not both:
@@ -432,7 +436,7 @@ Let's run through the storage methods:
     True
 
     >>> for hd in b5.history(root._p_oid, size=3):
-    ...     print hd['description']
+    ...     print(hd['description'].decode('utf-8'))
     trans 4
     trans 3
     trans 2
@@ -467,15 +471,17 @@ Let's run through the storage methods:
 
     >>> b5.tpc_transaction()
 
-    >>> b5.new_oid()
-    Traceback (most recent call last):
-    ...
+    >>> try:
+    ...     b5.new_oid()
+    ... except Exception as e: # Workaround http://bugs.python.org/issue19138
+    ...     print(e.__class__.__name__)
     ReadOnlyError
 
     >>> from ZODB.TimeStamp import TimeStamp
-    >>> b5.pack(TimeStamp(transactions[3]).timeTime(), lambda p: [])
-    Traceback (most recent call last):
-    ...
+    >>> try:
+    ...     b5.pack(TimeStamp(transactions[3]).timeTime(), lambda p: [])
+    ... except Exception as e:
+    ...     print(e.__class__.__name__)
     ReadOnlyError
 
     >>> b5.registerDB(db5)
@@ -483,9 +489,10 @@ Let's run through the storage methods:
     >>> b5.sortKey() == fs.sortKey()
     True
 
-    >>> b5.tpc_begin(transaction.get())
-    Traceback (most recent call last):
-    ...
+    >>> try:
+    ...     b5.tpc_begin(transaction.get())
+    ... except Exception as e:
+    ...     print(e.__class__.__name__)
     ReadOnlyError
 
     >>> b5.store(root._p_oid, transactions[4], b5.load(root._p_oid)[0], '',
@@ -499,13 +506,13 @@ Let's run through the storage methods:
     ... # doctest: +ELLIPSIS
     Traceback (most recent call last):
     ...
-    StorageTransactionError: ...
+    ZODB.POSException.StorageTransactionError: ...
 
     >>> b5.tpc_finish(transaction)
     ... # doctest: +ELLIPSIS
     Traceback (most recent call last):
     ...
-    StorageTransactionError: ...
+    ZODB.POSException.StorageTransactionError: ...
 
     >>> b5.tpc_transaction()
     >>> b5.tpc_abort(transaction)
@@ -515,7 +522,7 @@ Before storages don't support undo:
     >>> b5.supportsUndo
     Traceback (most recent call last):
     ...
-    AttributeError: Before instance has no attribute 'supportsUndo'
+    AttributeError: 'Before' object has no attribute 'supportsUndo'
 
 (Don't even ask about versions. :)
 
@@ -580,7 +587,7 @@ temporaryDirectory methods.
     >>> db = ZODB.DB(bs)
     >>> conn = db.open()
     >>> conn.root()['blob'] = ZODB.blob.Blob()
-    >>> conn.root()['blob'].open('w').write('data1')
+    >>> _ = conn.root()['blob'].open('w').write(b'data1')
     >>> transaction.commit()
 
     >>> bnow = zc.beforestorage.Before(bs)
@@ -588,11 +595,11 @@ temporaryDirectory methods.
     >>> connnow = dbnow.open()
     >>> rootnow = connnow.root()
 
-    >>> conn.root()['blob'].open('w').write('data2')
+    >>> _ = conn.root()['blob'].open('w').write(b'data2')
     >>> transaction.commit()
 
-    >>> rootnow['blob'].open().read()
-    'data1'
+    >>> print(rootnow['blob'].open().read().decode('utf-8'))
+    data1
 
     >>> bnow.temporaryDirectory() == bs.temporaryDirectory()
     True
