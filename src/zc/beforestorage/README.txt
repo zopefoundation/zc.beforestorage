@@ -41,10 +41,10 @@ Change history
 ==============
 
 
-Unreleased
-----------
+0.5.0 (2013-10-25)
+------------------
 
-- Add support for Python 3 and ZODB 4.
+Added ZODB4 and Python 3 support.
 
 
 0.4.0 (2010-12-09)
