@@ -45,7 +45,7 @@ setup(
     packages = find_packages('src'),
     namespace_packages = ['zc'],
     package_dir = {'': 'src'},
-    install_requires = ['setuptools'],
+    install_requires = ['setuptools', 'ZODB'],
     zip_safe = False,
     entry_points=entry_points,
     tests_require = tests_require,
@@ -53,6 +53,8 @@ setup(
     classifiers = [
         'License :: OSI Approved :: Zope Public License',
         'Programming Language :: Python',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.3',
         'Topic :: Database',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Operating System :: Microsoft :: Windows',
