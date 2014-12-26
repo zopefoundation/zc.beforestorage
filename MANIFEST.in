@@ -1,5 +1,6 @@
 include *.txt
 include *.py
+include tox.ini
 include buildout.cfg
 
 recursive-include src *
