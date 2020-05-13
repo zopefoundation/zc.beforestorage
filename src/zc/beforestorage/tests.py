@@ -38,7 +38,7 @@ def setUp(test):
 def test_suite():
     return unittest.TestSuite((
         doctest.DocFileSuite(
-            'README.txt',
+            'README.rst',
             setUp=setUp, tearDown=zope.testing.setupstack.tearDown,
             optionflags=doctest.IGNORE_EXCEPTION_DETAIL,
         ),
