@@ -11,7 +11,6 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-
 import datetime
 import os.path
 import time
@@ -20,19 +19,23 @@ import ZODB.POSException
 import ZODB.TimeStamp
 import ZODB.interfaces
 import ZODB.utils
-import persistent
 import zope.interface
+
 
 def time_stamp():
     t = time.time()
     g = time.gmtime(t)
-    before = ZODB.TimeStamp.TimeStamp(*(g[:5] + (g[5]+(t%1), )))
+    before = ZODB.TimeStamp.TimeStamp(*(g[:5] + (g[5] + (t % 1), )))
     return before
+
 
 def get_utcnow():
     return datetime.datetime.utcnow()
 
+
 startup_time_stamp = time_stamp()
+
+
 class Before:
 
     def __init__(self, storage, before=None):
@@ -65,7 +68,6 @@ class Before:
 
             zope.interface.alsoProvides(self, ZODB.interfaces.IBlobStorage)
 
-
     def close(self):
         self.storage.close()
 
@@ -93,10 +95,7 @@ class Before:
             result = [d for d in base_history
                       if d['tid'] < self.before
                       ]
-            if ((len(base_history) < s)
-                or
-                (len(result) >= size)
-                ):
+            if ((len(base_history) < s) or (len(result) >= size)):
                 if len(result) > size:
                     result = result[:size]
                 return result
@@ -109,7 +108,7 @@ class Before:
         return self.load(oid)[1]
 
     def lastTransaction(self):
-        return ZODB.utils.p64(ZODB.utils.u64(self.before)-1)
+        return ZODB.utils.p64(ZODB.utils.u64(self.before) - 1)
 
     def __len__(self):
         return len(self.storage)
@@ -163,7 +162,7 @@ class Before:
     def tpc_begin(self, transaction):
         raise ZODB.POSException.ReadOnlyError()
 
-    def tpc_finish(self, transaction, func = lambda: None):
+    def tpc_finish(self, transaction, func=lambda: None):
         raise ZODB.POSException.StorageTransactionError(self, transaction)
 
     def tpc_transaction(self):
@@ -171,6 +170,7 @@ class Before:
 
     def tpc_vote(self, transaction):
         raise ZODB.POSException.StorageTransactionError(self, transaction)
+
 
 class ZConfig:
 
@@ -197,7 +197,8 @@ class ZConfig:
                 self.config.before = f.read()
             else:
                 f = open(before_from_file, 'w')
-                self.config.before = get_utcnow().replace(microsecond=0).isoformat()
+                self.config.before = get_utcnow().replace(
+                    microsecond=0).isoformat()
                 f.write(self.config.before)
             f.close()
         before_storage = Before(base, self.config.before)

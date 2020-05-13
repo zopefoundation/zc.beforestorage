@@ -1,11 +1,22 @@
-.installed.cfg
-bin/
-develop-eggs/
-src/zc.beforestorage.egg-info/
-parts/
-*.py[co]
-__pycache__/
-build/
-dist/
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/pure-python-without-pypy
 *.egg-info/
+*.profraw
+*.pyc
+*.pyo
+.coverage
+.installed.cfg
+.mr.developer.cfg
 .tox/
+__pycache__/
+bin/
+build/
+coverage.xml
+develop-eggs/
+dist/
+eggs/
+htmlcov/
+lib/
+lib64
+parts/
+pyvenv.cfg

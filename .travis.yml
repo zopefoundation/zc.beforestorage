@@ -1,12 +1,32 @@
+# Generated from:
+# https://github.com/zopefoundation/meta/tree/master/config/pure-python-without-pypy
 language: python
 python:
-    - 2.7
-    - 3.3
-    - 3.4
+  - 2.7
+  - 3.5
+  - 3.6
+  - 3.7
+  - 3.8
+
+matrix:
+  include:
+    - name: "lint"
+      python: 3.7
+      env: TOXENV="lint"
+    - name: "coverage"
+      python: 3.7
+      env: TOXENV="coverage"
+      after_success:
+        - coveralls
+
 install:
-    - travis_retry pip install ZODB zope.testing zope.testrunner
-    - travis_retry pip install -e .
+  - pip install -U pip
+  - pip install -U tox-travis coveralls
+
 script:
-    - zope-testrunner --test-path=src --auto-color --auto-progress
+  - tox
+
 notifications:
-    email: false
+  email: false
+
+cache: pip

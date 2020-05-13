@@ -11,10 +11,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-name, version = 'zc.beforestorage', '0'
-
-import os
 from setuptools import setup, find_packages
+import os
+
+name = 'zc.beforestorage'
+version = '0.6.dev0'
 
 
 def read(rname):
@@ -25,12 +26,12 @@ def read(rname):
 entry_points = """
 """
 
-long_description = (
-    read('src/zc/beforestorage/README.txt')
-    + '\n' +
-    'Download\n'
-    '========\n'
-)
+long_description = '\n\n'.join([
+    read('README.rst'),
+    '.. contents::',
+    read('src/zc/beforestorage/README.rst'),
+    read('CHANGES.rst'),
+])
 
 tests_require = ['zope.testing']
 
@@ -42,11 +43,19 @@ setup(
     description='View storage before a given time',
     long_description=long_description,
     license='ZPL 2.1',
-
+    url='https://github.com/zopefoundation/zc.beforestorage',
     include_package_data=True,
     packages=find_packages('src'),
     namespace_packages=['zc'],
     package_dir={'': 'src'},
+    python_requires=', '.join([
+        '>=2.7',
+        '!=3.0.*',
+        '!=3.1.*',
+        '!=3.2.*',
+        '!=3.3.*',
+        '!=3.4.*',
+    ]),
     install_requires=['setuptools', 'ZODB'],
     zip_safe=False,
     entry_points=entry_points,
@@ -56,8 +65,10 @@ setup(
         'License :: OSI Approved :: Zope Public License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Database',
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Operating System :: Microsoft :: Windows',
