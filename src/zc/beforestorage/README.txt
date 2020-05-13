@@ -40,6 +40,12 @@ point in time.
 Change history
 ==============
 
+0.5.2 (unreleased)
+------------------
+
+-  Fix a long-standing bug in loadBefore´. The bug was revealed by
+   testing against ZODB 5, for which loadBefore plays a bigger role.
+
 
 0.5.1 (2013-10-25)
 ------------------
