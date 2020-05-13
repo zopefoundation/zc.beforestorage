@@ -1,6 +1,6 @@
 # Generated from:
 # https://github.com/zopefoundation/meta/tree/master/config/pure-python-without-pypy
-*.egg-info
+*.egg-info/
 *.profraw
 *.pyc
 *.pyo
@@ -8,6 +8,7 @@
 .installed.cfg
 .mr.developer.cfg
 .tox/
+__pycache__/
 bin/
 build/
 coverage.xml
