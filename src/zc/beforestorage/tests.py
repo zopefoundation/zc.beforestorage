@@ -11,15 +11,17 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-import time, unittest
 import doctest
-import zope.testing.setupstack
+import time
+import unittest
 import zc.beforestorage
+import zope.testing.setupstack
 
 
 def setUp(test):
     zope.testing.setupstack.setUpDirectory(test)
     now = [1200939762]
+
     def timetime():
         now[0] += 1
         return now[0]
@@ -27,8 +29,8 @@ def setUp(test):
     old_timetime = time.time
     zope.testing.setupstack.register(
         test,
-        lambda : setattr(time, 'time', old_timetime)
-        )
+        lambda: setattr(time, 'time', old_timetime)
+    )
     time.time = timetime
     zc.beforestorage.startup_time_stamp = zc.beforestorage.time_stamp()
 
@@ -39,8 +41,5 @@ def test_suite():
             'README.txt',
             setUp=setUp, tearDown=zope.testing.setupstack.tearDown,
             optionflags=doctest.IGNORE_EXCEPTION_DETAIL,
-            ),
-        ))
-
-if __name__ == '__main__':
-    unittest.main(defaultTest='test_suite')
+        ),
+    ))
