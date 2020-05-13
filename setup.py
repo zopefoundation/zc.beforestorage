@@ -14,7 +14,8 @@
 from setuptools import setup, find_packages
 import os
 
-name, version = 'zc.beforestorage', '0.6.dev0'
+name = 'zc.beforestorage'
+version = '0.6.dev0'
 
 
 def read(rname):
@@ -25,9 +26,12 @@ def read(rname):
 entry_points = """
 """
 
-long_description = (
-    read('src/zc/beforestorage/README.txt')
-)
+long_description = '\n\n'.join([
+    read('README.rst'),
+    '.. contents::',
+    read('src/zc/beforestorage/README.rst'),
+    read('CHANGES.rst'),
+])
 
 tests_require = ['zope.testing']
 
@@ -44,6 +48,14 @@ setup(
     packages=find_packages('src'),
     namespace_packages=['zc'],
     package_dir={'': 'src'},
+    python_requires=', '.join([
+        '>=2.7',
+        '!=3.0.*',
+        '!=3.1.*',
+        '!=3.2.*',
+        '!=3.3.*',
+        '!=3.4.*',
+    ]),
     install_requires=['setuptools', 'ZODB'],
     zip_safe=False,
     entry_points=entry_points,
