@@ -124,10 +124,14 @@ class Before:
     def loadBefore(self, oid, tid):
         if self.before < tid:
             tid = self.before
-        p, s1, s2 = self.storage.loadBefore(oid, tid)
-        if (s2 is not None) and (s2 >= self.before):
-            s2 = None
-        return p, s1, s2
+        r = self.storage.loadBefore(oid, tid)
+        if r:
+            p, s1, s2 = r
+            if (s2 is not None) and (s2 >= self.before):
+                s2 = None
+            return p, s1, s2
+        else:
+            return None
 
     def loadSerial(self, oid, serial):
         if serial >= self.before:

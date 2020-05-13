@@ -40,6 +40,12 @@ point in time.
 Change history
 ==============
 
+0.5.2 (unreleased)
+------------------
+
+-  Fix a long-standing bug in loadBefore´. The bug was revealed by
+   testing against ZODB 5, for which loadBefore plays a bigger role.
+
 
 0.5.1 (2013-10-25)
 ------------------
@@ -410,12 +416,12 @@ with an existing storage and a timestamp:
 
 here we see the database as it was before the 5th transaction was
 committed.  If we try to access a later object, we'll get a
-POSKeyError:
+ReadConflictError:
 
     >>> conn5.get(root[5]._p_oid)
     Traceback (most recent call last):
     ...
-    POSKeyError: 0x05
+    ZODB.POSException.ReadConflictError: b'\x00\x00\x00\x00\x00\x00\x00\x05'
 
 Similarly, while we can access earlier object revisions, we can't
 access revisions at the before time or later:
@@ -426,11 +432,6 @@ access revisions at the before time or later:
     Traceback (most recent call last):
     ...
     POSKeyError: 0x00
-
-    >>> conn5.get(root[5]._p_oid)
-    Traceback (most recent call last):
-    ...
-    POSKeyError: 0x05
 
 Let's run through the storage methods:
 
