@@ -15,7 +15,7 @@ from setuptools import setup, find_packages
 import os
 
 name = 'zc.beforestorage'
-version = '0.6'
+version = '0.7.dev0'
 
 
 def read(rname):
