@@ -1,3 +1,7 @@
+.. image:: https://github.com/zopefoundation/zc.beforestorage/workflows/tests/badge.svg
+        :target: https://github.com/zopefoundation/zc.beforestorage/actions?query=workflow%3Atests
+
+
 ==============
 Before Storage
 ==============
