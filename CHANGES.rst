@@ -4,7 +4,7 @@ CHANGES
 0.7 (unreleased)
 ----------------
 
-- Nothing changed yet.
+- Add support for Python 3.9.
 
 
 0.6 (2020-05-14)
