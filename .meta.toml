@@ -2,7 +2,7 @@
 # https://github.com/zopefoundation/meta/tree/master/config/pure-python
 [meta]
 template = "pure-python"
-commit-id = "4e9825189b9b8d18f28e7dbc63373d4baea08602"
+commit-id = "13207dce4ea1a51f579fedbf1b41b30fb60d4216"
 
 [python]
 with-pypy = false
@@ -13,3 +13,8 @@ with-appveyor = false
 
 [coverage]
 fail-under = 94
+
+[manifest]
+additional-rules = [
+    "recursive-include src *.xml",
+    ]
