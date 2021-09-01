@@ -33,7 +33,10 @@ long_description = '\n\n'.join([
     read('CHANGES.rst'),
 ])
 
-tests_require = ['zope.testing']
+tests_require = [
+    'zope.testing',
+    'zope.testrunner',
+]
 
 setup(
     name=name,
