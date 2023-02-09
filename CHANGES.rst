@@ -1,7 +1,7 @@
 CHANGES
 =======
 
-0.7 (unreleased)
+1.0 (unreleased)
 ----------------
 
 - Add support for Python 3.9.
