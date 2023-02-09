@@ -18,7 +18,7 @@ from setuptools import setup
 
 
 name = 'zc.beforestorage'
-version = '1.0.dev0'
+version = '1.0'
 
 
 def read(rname):
