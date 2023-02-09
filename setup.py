@@ -11,8 +11,11 @@
 # FOR A PARTICULAR PURPOSE.
 #
 ##############################################################################
-from setuptools import setup, find_packages
 import os
+
+from setuptools import find_packages
+from setuptools import setup
+
 
 name = 'zc.beforestorage'
 version = '1.0.dev0'
@@ -51,13 +54,8 @@ setup(
     packages=find_packages('src'),
     namespace_packages=['zc'],
     package_dir={'': 'src'},
-    python_requires=', '.join([
-        '>=2.7',
-        '!=3.0.*',
-        '!=3.1.*',
-        '!=3.2.*',
-        '!=3.3.*',
-        '!=3.4.*',
+    python_requires=','.join([
+        '>=3.7',
     ]),
     install_requires=['setuptools', 'ZODB'],
     zip_safe=False,
@@ -67,12 +65,11 @@ setup(
     classifiers=[
         'License :: OSI Approved :: Zope Public License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
         'Programming Language :: Python :: Implementation :: CPython',
         'Topic :: Database',
         'Topic :: Software Development :: Libraries :: Python Modules',

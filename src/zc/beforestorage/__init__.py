@@ -15,9 +15,9 @@ import datetime
 import os.path
 import time
 
+import ZODB.interfaces
 import ZODB.POSException
 import ZODB.TimeStamp
-import ZODB.interfaces
 import ZODB.utils
 import zope.interface
 
