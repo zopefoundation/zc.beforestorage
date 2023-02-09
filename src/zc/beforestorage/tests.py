@@ -14,8 +14,10 @@
 import doctest
 import time
 import unittest
-import zc.beforestorage
+
 import zope.testing.setupstack
+
+import zc.beforestorage
 
 
 def setUp(test):
