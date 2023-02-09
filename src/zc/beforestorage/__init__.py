@@ -72,12 +72,12 @@ class Before:
         self.storage.close()
 
     def getName(self):
-        return "%s before %s" % (self.storage.getName(),
-                                 ZODB.TimeStamp.TimeStamp(self.before),
-                                 )
+        return "{} before {}".format(
+            self.storage.getName(),
+            ZODB.TimeStamp.TimeStamp(self.before))
 
     def __repr__(self):
-        return "<%s: %s>" % (self.__class__.__name__, self.getName())
+        return "<{}: {}>".format(self.__class__.__name__, self.getName())
 
     def getSize(self):
         return self.storage.getSize()
