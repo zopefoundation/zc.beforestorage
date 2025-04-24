@@ -1,3 +1,10 @@
+.. caution::
+
+    This repository is no longer maintained and thus it got archived.
+
+    If you want to work on it please open a ticket in
+    https://github.com/zopefoundation/meta/issues requesting its unarchival.
+
 .. image:: https://github.com/zopefoundation/zc.beforestorage/workflows/tests/badge.svg
         :target: https://github.com/zopefoundation/zc.beforestorage/actions?query=workflow%3Atests
 
